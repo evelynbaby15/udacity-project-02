@@ -69,3 +69,18 @@ createCardsElements(getRandomCards());
  *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
+function addEventToCard() {
+    let deck = document.querySelector(".deck");
+    deck.addEventListener('click', showCard);
+}
+
+// TODO:
+function showCard(event) {
+    console.log("click event fired", event.target);
+    if(event.target && event.target.nodeName === "LI") {
+        console.log(event.target.classList);
+    }
+}
+
+addEventToCard();
+
