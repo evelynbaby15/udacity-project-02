@@ -1,9 +1,4 @@
 /*
- * Create a list that holds all of your cards
- */
-
-
-/*
  * Display the cards on the page
  *   - shuffle the list of cards using the provided "shuffle" method below
  *   - loop through each card and create its HTML
@@ -25,6 +20,44 @@ function shuffle(array) {
     return array;
 }
 
+
+/*
+ * Create a list that holds all of your cards
+ */
+
+function getRandomCards() {
+    let cards = ['fa-diamond', 'fa-anchor', 'fa-paper-plane-o', 'fa-bolt', 'fa-cube', 'fa-leaf', 'fa-bicycle', 'fa-bomb'];
+    cards = cards.concat(cards);
+    // console.log("ORI cards: ", cards);
+    
+    let shuffledCards = shuffle(cards);
+    console.log("Shuffled cards:", shuffledCards);
+    return shuffledCards;
+}
+
+function createCardsElements(cardsArr) {
+    const fragment = document.createDocumentFragment();
+    // Create card's <li> element
+    let liEle = document.createElement("li");
+    liEle.classList.add("card", "open", "show"); // FIXME: Remove "open" & "show" here.
+    
+    for(let cardClass of cardsArr) {
+        liEle = liEle.cloneNode();
+        // Created <i> and put into created <li>      
+        let i = document.createElement("i");
+        i.classList.add("fa", cardClass);
+        liEle.appendChild(i);
+
+        fragment.appendChild(liEle);
+    }
+    // document.body.appendChild(fragment);
+    // Append all card's <li> to <ul class= "deck">
+    let deck = document.querySelector(".deck");
+    deck.appendChild(fragment);
+}
+
+// TEST
+createCardsElements(getRandomCards());
 
 /*
  * set up the event listener for a card. If a card is clicked:
