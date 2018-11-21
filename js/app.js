@@ -113,7 +113,7 @@ function showCard(event) {
 
         // When user click the same card (which is already opend) twice, to avoid match the same card instance.
         if (classList.contains("open")) {
-            console.log("Don't click the same card again!");
+            console.log("Please click another card!");
             return;
         }
 
@@ -135,10 +135,17 @@ function showCard(event) {
             } else {               
                 // 如果結果不相等就要把這兩張都蓋回去
                 setTimeout(() => {
-                    toggleCardsOpenAndShow(event.target);
-                    toggleCardsOpenAndShow(TMP_FIRST_GUESS_TARGET);
+                    // toggleCardsOpenAndShow(event.target);
+                    // toggleCardsOpenAndShow(TMP_FIRST_GUESS_TARGET);
+
+                    event.target.classList.toggle("open");
+                    event.target.classList.toggle("show");
+
+                    TMP_FIRST_GUESS_TARGET.classList.toggle("open");
+                    TMP_FIRST_GUESS_TARGET.classList.toggle("show");
+
                     TMP_FIRST_GUESS_TARGET = "";
-                }, 500);
+                }, 600);
             }
             COUNT_GUESS ++;
             document.querySelector(".moves").textContent = COUNT_GUESS;
@@ -149,8 +156,12 @@ function showCard(event) {
 
 
 function toggleCardsOpenAndShow(eventTarget) {
-    eventTarget.classList.toggle("open");  
-    eventTarget.classList.toggle("show");
+    eventTarget.classList.toggle("open");
+    // FIXME: This setTimeout is only for css rotateY ?
+    setTimeout(() => {
+        eventTarget.classList.toggle("show");
+    }, 200);
+    
 }
 
 function restart() {

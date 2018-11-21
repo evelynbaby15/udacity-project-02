@@ -63,17 +63,24 @@ h1 {
     justify-content: center;
     align-items: center;
     box-shadow: 5px 2px 20px 0 rgba(46, 61, 73, 0.5);
+
+    /* Let card rotate Y 180 in the first */
+    transform: rotateY(180deg);
 }
 
 .deck .card.open {
+    /* Then rotate them back when user click */
     transform: rotateY(0);
     background: #02b3e4;
     cursor: default;
+    
+    transition: transform 400ms /*ease-in-out*/;
+    /* transform-style: preserve-3d; */
 }
 
 .deck .card.show {
     font-size: 33px;
-}
+ }
 
 .deck .card.match {
     cursor: default;
