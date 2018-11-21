@@ -106,6 +106,27 @@ const guess = {
     }
 };
 
+/**
+ * If guess doesn't not match serveral times (e.g. 3 times), remove one star.
+ */
+function removeStar() {
+    CURRENT_ERROR_COUNTS ++;
+    if(CURRENT_ERROR_COUNTS === KEEP_START_LIMIT) {
+        let starLis = document.querySelectorAll(".stars li");
+        for(star of starLis) {
+            if(star.style.display != "none") {
+                star.style.display = "none";
+                break;
+            }
+        }
+        
+        CURRENT_ERROR_COUNTS = 0;
+    }
+}
+
+let KEEP_START_LIMIT = 4;
+let CURRENT_ERROR_COUNTS = 0;
+
 function showCard(event) {
     // console.log("click event fired", event.target);
     if (event.target && event.target.nodeName === "LI") {
@@ -146,6 +167,8 @@ function showCard(event) {
 
                     TMP_FIRST_GUESS_TARGET = "";
                 }, 600);
+
+                removeStar();
             }
             COUNT_GUESS ++;
             document.querySelector(".moves").textContent = COUNT_GUESS;
@@ -188,6 +211,7 @@ function clearCards() {
     }
     */
 }
+
 
 /** Flow start */
 document.querySelector(".restart").addEventListener('click', function() {
