@@ -29,7 +29,7 @@ function getRandomCards() {
     let cards = ['fa-diamond', 'fa-anchor', 'fa-paper-plane-o', 'fa-bolt', 'fa-cube', 'fa-leaf', 'fa-bicycle', 'fa-bomb'];
     cards = cards.concat(cards);
     // console.log("ORI cards: ", cards);
-    
+
     let shuffledCards = shuffle(cards);
     console.log("Shuffled cards:", shuffledCards);
     return shuffledCards;
@@ -39,9 +39,9 @@ function createCardsElements(cardsArr) {
     const fragment = document.createDocumentFragment();
     // Create card's <li> element
     let liEle = document.createElement("li");
-    liEle.classList.add("card", "open", "show"); // FIXME: Remove "open" & "show" here.
-    
-    for(let cardClass of cardsArr) {
+    liEle.classList.add("card"); // FIXME: Remove "open" & "show" here.
+
+    for (let cardClass of cardsArr) {
         liEle = liEle.cloneNode();
         // Created <i> and put into created <li>      
         let i = document.createElement("i");
@@ -56,8 +56,7 @@ function createCardsElements(cardsArr) {
     deck.appendChild(fragment);
 }
 
-// TEST
-createCardsElements(getRandomCards());
+
 
 /*
  * set up the event listener for a card. If a card is clicked:
@@ -74,13 +73,120 @@ function addEventToCard() {
     deck.addEventListener('click', showCard);
 }
 
-// TODO:
+
+function getICardContent(targetEle) {
+    let i = targetEle.querySelector("i");
+    let cls = i.classList;
+    console.log("cls:", cls[1]);
+    return cls[1];
+}
+
+let TMP_FIRST_GUESS_TARGET = "";
+let COUNT_GUESS = 0;
+
+const guess = {
+    // firstCard: "",
+    compare(guessTarget) {
+        let thisGuess = getICardContent(guessTarget);
+        let lastGuess = getICardContent(TMP_FIRST_GUESS_TARGET);
+
+        console.log("1: ", lastGuess, ", 2: ", thisGuess);
+
+        if (lastGuess === thisGuess) {
+            console.log("match!");            
+            // TODO: show match correct CSS effect
+            return true;
+        } else {
+            // TODO:
+            // 1.Hide these two already guessed cards.            
+            console.log("not correct.");
+            return false;
+        }
+
+    }
+};
+
 function showCard(event) {
-    console.log("click event fired", event.target);
-    if(event.target && event.target.nodeName === "LI") {
-        console.log(event.target.classList);
+    // console.log("click event fired", event.target);
+    if (event.target && event.target.nodeName === "LI") {
+        let classList = event.target.classList;
+
+        // When user click the same card (which is already opend) twice, to avoid match the same card instance.
+        if (classList.contains("open")) {
+            console.log("Don't click the same card again!");
+            return;
+        }
+
+        toggleCardsOpenAndShow(event.target);
+        // classList.toggle("open");
+        // classList.toggle("show");
+
+        if (TMP_FIRST_GUESS_TARGET === "") {
+            // Assign first guess card
+            TMP_FIRST_GUESS_TARGET = event.target;
+        } else {
+            // Guess flow
+            let guessResult = guess.compare(event.target);
+            if (guessResult) {
+                TMP_FIRST_GUESS_TARGET.classList.toggle("match");
+                event.target.classList.toggle("match");
+
+                TMP_FIRST_GUESS_TARGET = "";
+            } else {               
+                // 如果結果不相等就要把這兩張都蓋回去
+                setTimeout(() => {
+                    toggleCardsOpenAndShow(event.target);
+                    toggleCardsOpenAndShow(TMP_FIRST_GUESS_TARGET);
+                    TMP_FIRST_GUESS_TARGET = "";
+                }, 500);
+            }
+            COUNT_GUESS ++;
+            document.querySelector(".moves").textContent = COUNT_GUESS;
+        }
+
     }
 }
 
-addEventToCard();
 
+function toggleCardsOpenAndShow(eventTarget) {
+    eventTarget.classList.toggle("open");  
+    eventTarget.classList.toggle("show");
+}
+
+function restart() {
+    COUNT_GUESS = 0;
+    document.querySelector(".moves").textContent = COUNT_GUESS;
+
+    clearCards();
+    initGame();
+}
+
+function initGame() {
+    createCardsElements(getRandomCards());
+    addEventToCard();
+}
+
+function clearCards() {
+    const deck = document.getElementsByClassName("deck");
+    deck[0].innerHTML = "";
+    /*
+    const deckChilds = deck[0].getElementsByTagName("li");
+    while(deckChilds.length > 0) {
+        // console.log("item(0):", deckChilds.item(0));
+        document.querySelector(".deck").removeChild(deckChilds.item(0));
+    }
+    */
+}
+
+/** Flow start */
+document.querySelector(".restart").addEventListener('click', function() {
+    let r = confirm("Do your really wnat to restart game?");
+    if(r) {
+        restart();
+    }
+});
+
+initGame();
+
+// createCardsElements(getRandomCards());
+// addEventToCard();
