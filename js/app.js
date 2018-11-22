@@ -39,7 +39,7 @@ function createCardsElements(cardsArr) {
     const fragment = document.createDocumentFragment();
     // Create card's <li> element
     let liEle = document.createElement("li");
-    liEle.classList.add("card"); // FIXME: Remove "open" & "show" here.
+    liEle.classList.add("card");
 
     for (let cardClass of cardsArr) {
         liEle = liEle.cloneNode();
@@ -85,20 +85,18 @@ let TMP_FIRST_GUESS_TARGET = "";
 let COUNT_GUESS = 0;
 
 const guess = {
-    // firstCard: "",
     compare(guessTarget) {
         let thisGuess = getICardContent(guessTarget);
         let lastGuess = getICardContent(TMP_FIRST_GUESS_TARGET);
 
-        console.log("1: ", lastGuess, ", 2: ", thisGuess);
+        // console.log("1: ", lastGuess, ", 2: ", thisGuess);
 
         if (lastGuess === thisGuess) {
-            console.log("match!");            
-            // TODO: show match correct CSS effect
+            console.log("match!");
+            // Show match correct CSS effect
             return true;
         } else {
-            // TODO:
-            // 1.Hide these two already guessed cards.            
+            // Hide these two already guessed cards.            
             console.log("not correct.");
             return false;
         }
@@ -110,16 +108,16 @@ const guess = {
  * If guess doesn't not match serveral times (e.g. 3 times), remove one star.
  */
 function removeStar() {
-    CURRENT_ERROR_COUNTS ++;
-    if(CURRENT_ERROR_COUNTS === KEEP_START_LIMIT) {
+    CURRENT_ERROR_COUNTS++;
+    if (CURRENT_ERROR_COUNTS === KEEP_START_LIMIT) {
         let starLis = document.querySelectorAll(".stars li");
-        for(star of starLis) {
-            if(star.style.display != "none") {
+        for (star of starLis) {
+            if (star.style.display != "none") {
                 star.style.display = "none";
                 break;
             }
         }
-        
+
         CURRENT_ERROR_COUNTS = 0;
     }
 }
@@ -139,8 +137,6 @@ function showCard(event) {
         }
 
         toggleCardsOpenAndShow(event.target);
-        // classList.toggle("open");
-        // classList.toggle("show");
 
         if (TMP_FIRST_GUESS_TARGET === "") {
             // Assign first guess card
@@ -153,11 +149,12 @@ function showCard(event) {
                 event.target.classList.toggle("match");
 
                 TMP_FIRST_GUESS_TARGET = "";
-            } else {               
+            } else {
+
                 // 如果結果不相等就要把這兩張都蓋回去
                 setTimeout(() => {
-                    // toggleCardsOpenAndShow(event.target);
-                    // toggleCardsOpenAndShow(TMP_FIRST_GUESS_TARGET);
+                    TMP_FIRST_GUESS_TARGET.classList.toggle("not-match");
+                    event.target.classList.toggle("not-match");
 
                     event.target.classList.toggle("open");
                     event.target.classList.toggle("show");
@@ -166,11 +163,16 @@ function showCard(event) {
                     TMP_FIRST_GUESS_TARGET.classList.toggle("show");
 
                     TMP_FIRST_GUESS_TARGET = "";
-                }, 600);
+                }, 500);
+
+                // Must remove guess not match css class again
+                TMP_FIRST_GUESS_TARGET.classList.toggle("not-match");
+                event.target.classList.toggle("not-match");
 
                 removeStar();
+
             }
-            COUNT_GUESS ++;
+            COUNT_GUESS++;
             document.querySelector(".moves").textContent = COUNT_GUESS;
         }
 
@@ -184,7 +186,7 @@ function toggleCardsOpenAndShow(eventTarget) {
     setTimeout(() => {
         eventTarget.classList.toggle("show");
     }, 200);
-    
+
 }
 
 function restart() {
@@ -214,9 +216,9 @@ function clearCards() {
 
 
 /** Flow start */
-document.querySelector(".restart").addEventListener('click', function() {
+document.querySelector(".restart").addEventListener('click', function () {
     let r = confirm("Do your really wnat to restart game?");
-    if(r) {
+    if (r) {
         restart();
     }
 });
