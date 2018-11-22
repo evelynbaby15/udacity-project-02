@@ -170,18 +170,23 @@ h1 {
  .modal {
     background-color: #fefefe;
     margin: 15% auto;
-    padding: 20px;
+    padding: 10px 0;
     border: 1px solid #888;
-    width: 50%;
+    width: 80%;
  }
 
- .modal-headnig {
+ .modal-heading {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    border-bottom: solid 1px #2e3d49;
+    align-items: baseline;
+    padding: 0 25px;
  }
 
  .modal-close {
      font-size: 2rem;
-     float: right;
+ }
+
+ .modal-content {
+     padding: 0 25px;
  }
