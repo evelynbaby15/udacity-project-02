@@ -82,12 +82,23 @@ function getCardClassContent(targetEle) {
     return cls[1];
 }
 
+// Global variables
 let TMP_FIRST_GUESS_TARGET = "";
 let COUNT_GUESS = 0;
 
 const KEEP_STAR_LIMIT = 4;
 let ERROR_COUNTS = 0;
 let TOTAL_GUESS_PAIRS = 8;
+
+/**
+ * oh...I don't have any idea how to handle these ugly global variables
+ */
+function resetGlobalVars() {
+    TMP_FIRST_GUESS_TARGET = "";
+    COUNT_GUESS = 0;
+    ERROR_COUNTS = 0;
+    TOTAL_GUESS_PAIRS = 8;
+}
 
 const guess = {
     compare(guessTarget) {
@@ -167,6 +178,8 @@ function showCongratulations() {
 
     var eles = document.querySelectorAll(".stars li");
     document.querySelector("#star-count").innerHTML = eles.length;
+
+    resetGlobalVars();
 }
 
 
@@ -209,17 +222,18 @@ function openCard(target) {
 }
 
 function restart() {
-    COUNT_GUESS = 0;
-    document.querySelector(".moves").textContent = COUNT_GUESS;
-
+    // COUNT_GUESS = 0;
     clearCards();
     initGame();
+
+    document.querySelector(".moves").textContent = COUNT_GUESS;
 }
 
 function initGame() {
     createCardsElements(getRandomCards());
     addEventToCard();
     createStars();
+    resetGlobalVars();
 }
 
 function clearCards() {
@@ -255,6 +269,7 @@ document.querySelector(".btn-play").addEventListener('click', function () {
 
 
 function createStars() {
+    document.querySelector(".stars").innerHTML="";
     let stars = document.querySelector(".stars");
     for (let i = 0; i < 3; i++) {
         let li = document.createElement("li");
