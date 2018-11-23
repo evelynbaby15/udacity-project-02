@@ -74,20 +74,25 @@ function addEventToCard() {
 }
 
 
-function getICardContent(targetEle) {
+function getCardClassContent(targetEle) {
     let i = targetEle.querySelector("i");
     let cls = i.classList;
-    console.log("cls:", cls[1]);
+    // console.log("cls:", cls[1]);
+    // e.g. "fa fa-diamond", only want the second class name
     return cls[1];
 }
 
 let TMP_FIRST_GUESS_TARGET = "";
 let COUNT_GUESS = 0;
 
+const KEEP_STAR_LIMIT = 4;
+let ERROR_COUNTS = 0;
+let TOTAL_GUESS_PAIRS = 8;
+
 const guess = {
     compare(guessTarget) {
-        let thisGuess = getICardContent(guessTarget);
-        let lastGuess = getICardContent(TMP_FIRST_GUESS_TARGET);
+        let thisGuess = getCardClassContent(guessTarget);
+        let lastGuess = getCardClassContent(TMP_FIRST_GUESS_TARGET);
 
         // console.log("1: ", lastGuess, ", 2: ", thisGuess);
 
@@ -107,23 +112,16 @@ const guess = {
 /**
  * If guess doesn't not match serveral times (e.g. 3 times), remove one star.
  */
-function removeStar() {
-    CURRENT_ERROR_COUNTS++;
-    if (CURRENT_ERROR_COUNTS === KEEP_START_LIMIT) {
+function checkIfRemoveStar() {
+    ERROR_COUNTS++;
+    if (ERROR_COUNTS === KEEP_STAR_LIMIT) {
         let starLis = document.querySelectorAll(".stars li");
-        for (star of starLis) {
-            if (star.style.display != "none") {
-                star.style.display = "none";
-                break;
-            }
+        if (starLis !== null) {
+            starLis[0].remove();
         }
-
-        CURRENT_ERROR_COUNTS = 0;
+        ERROR_COUNTS = 0;
     }
 }
-
-let KEEP_START_LIMIT = 4;
-let CURRENT_ERROR_COUNTS = 0;
 
 function showCard(event) {
     // console.log("click event fired", event.target);
@@ -136,7 +134,7 @@ function showCard(event) {
             return;
         }
 
-        toggleCardsOpenAndShow(event.target);
+        openCard(event.target);
 
         if (TMP_FIRST_GUESS_TARGET === "") {
             // Assign first guess card
@@ -145,46 +143,67 @@ function showCard(event) {
             // Guess flow
             let guessResult = guess.compare(event.target);
             if (guessResult) {
-                TMP_FIRST_GUESS_TARGET.classList.toggle("match");
-                event.target.classList.toggle("match");
+                displayMatch(event.target);
 
-                TMP_FIRST_GUESS_TARGET = "";
+                TOTAL_GUESS_PAIRS--;
+                if (TOTAL_GUESS_PAIRS === 0) {
+                    showCongratulations();
+                }
+
             } else {
-
-                // 如果結果不相等就要把這兩張都蓋回去
-                setTimeout(() => {
-                    TMP_FIRST_GUESS_TARGET.classList.toggle("not-match");
-                    event.target.classList.toggle("not-match");
-
-                    event.target.classList.toggle("open");
-                    event.target.classList.toggle("show");
-
-                    TMP_FIRST_GUESS_TARGET.classList.toggle("open");
-                    TMP_FIRST_GUESS_TARGET.classList.toggle("show");
-
-                    TMP_FIRST_GUESS_TARGET = "";
-                }, 500);
-
-                // Must remove guess not match css class again
-                TMP_FIRST_GUESS_TARGET.classList.toggle("not-match");
-                event.target.classList.toggle("not-match");
-
-                removeStar();
-
+                displayNoMatch(event.target);
+                checkIfRemoveStar();
             }
-            COUNT_GUESS++;
-            document.querySelector(".moves").textContent = COUNT_GUESS;
+            // COUNT_GUESS++;
+            document.querySelector(".moves").textContent = COUNT_GUESS++;
         }
 
     }
 }
 
+function showCongratulations() {
+    document.querySelector(".modal-bk").style.display = "block";
+    document.querySelector("#move-count").innerHTML = COUNT_GUESS;
 
-function toggleCardsOpenAndShow(eventTarget) {
-    eventTarget.classList.toggle("open");
-    // FIXME: This setTimeout is only for css rotateY ?
+    var eles = document.querySelectorAll(".stars li");
+    document.querySelector("#star-count").innerHTML = eles.length;
+}
+
+
+function displayMatch(target) {
+    TMP_FIRST_GUESS_TARGET.classList.toggle("match");
+    target.classList.toggle("match");
+
+    TMP_FIRST_GUESS_TARGET = "";
+}
+
+function displayNoMatch(target) {
+    // If 2 guessed are not match, then close these 2 cards at the same time
     setTimeout(() => {
-        eventTarget.classList.toggle("show");
+        // Show not-match style effect
+        TMP_FIRST_GUESS_TARGET.classList.toggle("not-match");
+        target.classList.toggle("not-match");
+
+        // Close 2 guessed cards
+        target.classList.toggle("open");
+        target.classList.toggle("show");
+
+        TMP_FIRST_GUESS_TARGET.classList.toggle("open");
+        TMP_FIRST_GUESS_TARGET.classList.toggle("show");
+
+        // Reset first guess card
+        TMP_FIRST_GUESS_TARGET = "";
+    }, 500);
+
+    // Must remove guess not match css class again
+    TMP_FIRST_GUESS_TARGET.classList.toggle("not-match");
+    target.classList.toggle("not-match");
+}
+
+function openCard(target) {
+    target.classList.toggle("open");
+    setTimeout(() => {
+        target.classList.toggle("show");
     }, 200);
 
 }
@@ -200,6 +219,7 @@ function restart() {
 function initGame() {
     createCardsElements(getRandomCards());
     addEventToCard();
+    createStars();
 }
 
 function clearCards() {
@@ -215,7 +235,7 @@ function clearCards() {
 }
 
 
-/** Flow start */
+/** Bind event listener */
 document.querySelector(".restart").addEventListener('click', function () {
     let r = confirm("Do your really wnat to restart game?");
     if (r) {
@@ -223,7 +243,28 @@ document.querySelector(".restart").addEventListener('click', function () {
     }
 });
 
-initGame();
+document.querySelector(".modal-close").addEventListener('click', function () {
+    document.querySelector(".modal-bk").style.display = "none";
+});
 
-// createCardsElements(getRandomCards());
-// addEventToCard();
+document.querySelector(".btn-play").addEventListener('click', function () {
+    document.querySelector(".modal-bk").style.display = "none";
+    restart();
+    createStars();
+});
+
+
+function createStars() {
+    let stars = document.querySelector(".stars");
+    for (let i = 0; i < 3; i++) {
+        let li = document.createElement("li");
+        let i = document.createElement("i");
+        i.classList.add("fa", "fa-star");
+        li.appendChild(i);
+        stars.appendChild(li);
+    }
+
+}
+
+/** Flow start */
+initGame();

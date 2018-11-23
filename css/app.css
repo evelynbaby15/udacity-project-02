@@ -157,7 +157,7 @@ h1 {
  * Styles for modal dialog
  */
  .modal-bk {
-     /* display: none;*/
+     display: none;
 
      width: 100%;
      height: 100%;
@@ -172,7 +172,7 @@ h1 {
     margin: 15% auto;
     padding: 10px 0;
     border: 1px solid #888;
-    width: 80%;
+    width: 60%;
  }
 
  .modal-heading {
@@ -185,8 +185,21 @@ h1 {
 
  .modal-close {
      font-size: 2rem;
+     padding: 0 15px;
  }
+
+ .modal-close:hover {
+     cursor: pointer;
+     background: #95edf3;
+     color: white;
+     padding: 0 15px;
+}
 
  .modal-content {
      padding: 0 25px;
+ }
+
+ .btn-play {
+    padding: 10px;
+    font-size: 1rem;
  }
