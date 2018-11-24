@@ -173,6 +173,8 @@ function showCard(event) {
 }
 
 function showCongratulations() {
+    stopTimer();
+
     document.querySelector(".modal-bk").style.display = "block";
     document.querySelector("#move-count").innerHTML = COUNT_GUESS;
 
@@ -234,6 +236,7 @@ function initGame() {
     addEventToCard();
     createStars();
     resetGlobalVars();
+    timer();
 }
 
 function clearCards() {
@@ -248,6 +251,46 @@ function clearCards() {
     */
 }
 
+
+function createStars() {
+    document.querySelector(".stars").innerHTML = "";
+    let stars = document.querySelector(".stars");
+    for (let i = 0; i < 3; i++) {
+        let li = document.createElement("li");
+        let i = document.createElement("i");
+        i.classList.add("fa", "fa-star");
+        li.appendChild(i);
+        stars.appendChild(li);
+    }
+
+}
+
+let TIMER_ID = "";
+function stopTimer() {
+    if (TIMER_ID !== "") {
+        clearInterval(TIMER_ID);
+    }
+}
+
+function timer() {
+    // clear original timer id if exist older timer.
+    stopTimer();
+
+    var now = new Date().getTime();
+    TIMER_ID = setInterval(function tick() {
+        var current = new Date().getTime();
+        let elapase = current - now;
+
+        var h = Math.floor((elapase % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var m = Math.floor((elapase % (1000 * 60 * 60)) / (1000 * 60));
+        var s = Math.floor((elapase % (1000 * 60)) / 1000);
+
+        const time = `${h = (h < 10) ? "0" + h : h}:${m = (m < 10) ? "0" + m : m}:${s = (s < 10) ? "0" + s : s}`;
+        document.querySelector(".timer").textContent = time;
+        document.querySelector("#time_counts").innerHTML = time;
+
+    }, 1000);
+}
 
 /** Bind event listener */
 document.querySelector(".restart").addEventListener('click', function () {
@@ -268,18 +311,6 @@ document.querySelector(".btn-play").addEventListener('click', function () {
 });
 
 
-function createStars() {
-    document.querySelector(".stars").innerHTML="";
-    let stars = document.querySelector(".stars");
-    for (let i = 0; i < 3; i++) {
-        let li = document.createElement("li");
-        let i = document.createElement("i");
-        i.classList.add("fa", "fa-star");
-        li.appendChild(i);
-        stars.appendChild(li);
-    }
-
-}
-
 /** Flow start */
 initGame();
+
